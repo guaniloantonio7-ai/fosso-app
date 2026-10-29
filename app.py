@@ -10,7 +10,7 @@ import pdf_generator as pdf_gen
 # Recarga limpia de módulos para evitar uso de versiones previas en caché
 importlib.reload(pdf_gen)
 
-# Enlace directo crudo (Raw) del icono oficial en GitHub
+# Enlace directo del icono oficial en GitHub
 URL_ICONO_RAW = "https://raw.githubusercontent.com/guaniloantonio7-ai/fosso-app/main/assets/icono_app.png"
 
 # Detección de ruta local como respaldo
@@ -39,7 +39,7 @@ def obtener_imagen_base64(ruta_imagen):
 b64_ico = obtener_imagen_base64(ruta_logo_local)
 tag_ico = f"data:image/png;base64,{b64_ico}" if b64_ico else URL_ICONO_RAW
 
-# Inyección de Metadatos PWA (iOS / Android / Desktop) y eliminación de Streamlit UI
+# Inyección de Metadatos PWA y Estilos visuales
 st.markdown(f"""
     <head>
         <title>FOSSO</title>
@@ -54,13 +54,30 @@ st.markdown(f"""
         <link rel="shortcut icon" type="image/png" href="{URL_ICONO_RAW}">
     </head>
     <style>
-        /* 1. Ocultar menús, barra superior y marca de agua de Streamlit */
-        #MainMenu {{visibility: hidden !important; display: none !important;}}
+        /* 1. Header transparente que conserva la flecha del sidebar y el menú de temas */
+        header[data-testid="stHeader"] {{
+            background-color: transparent !important;
+            z-index: 99 !important;
+        }}
+
+        /* Asegurar que la flecha para abrir/cerrar el menú siempre sea visible y responsiva */
+        [data-testid="stSidebarCollapseButton"],
+        [data-testid="stSidebarNavCollapseIcon"],
+        button[kind="header"] {{
+            visibility: visible !important;
+            display: inline-flex !important;
+            color: #10371E !important;
+        }}
+
+        /* Mantener visible el menú superior derecho para selector de temas */
+        #MainMenu {{
+            visibility: visible !important;
+        }}
+
+        /* Ocultar únicamente el footer y marcas de agua de Streamlit Cloud */
         footer {{visibility: hidden !important; display: none !important;}}
-        header {{visibility: hidden !important; display: none !important;}}
         .viewerBadge_container__1QSob {{display: none !important;}}
         [data-testid="stStatusWidget"] {{visibility: hidden !important; display: none !important;}}
-        [data-testid="stToolbar"] {{visibility: hidden !important; display: none !important;}}
 
         /* 2. Fondo general de la barra lateral */
         section[data-testid="stSidebar"] {{
