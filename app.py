@@ -54,13 +54,13 @@ st.markdown(f"""
         <link rel="shortcut icon" type="image/png" href="{URL_ICONO_RAW}">
     </head>
     <style>
-        /* 1. Header transparente que conserva la flecha del sidebar y el menú de temas */
+        /* 1. Header transparente que conserva la flecha del sidebar */
         header[data-testid="stHeader"] {{
             background-color: transparent !important;
             z-index: 99 !important;
         }}
 
-        /* Asegurar que la flecha para abrir/cerrar el menú siempre sea visible y responsiva */
+        /* Asegurar que la flecha para abrir/cerrar el menú siempre sea visible */
         [data-testid="stSidebarCollapseButton"],
         [data-testid="stSidebarNavCollapseIcon"],
         button[kind="header"] {{
@@ -69,22 +69,29 @@ st.markdown(f"""
             color: #10371E !important;
         }}
 
-        /* Mantener visible el menú superior derecho para selector de temas */
-        #MainMenu {{
-            visibility: visible !important;
+        /* 2. Ocultar botones de desarrollo de GitHub, Fork, Lápiz y Share */
+        [data-testid="stToolbarActions"],
+        [data-testid="stToolbar"] > div:first-child,
+        [data-testid="stAppDeployButton"],
+        .stToolbarActionButton,
+        button[title="View app in GitHub"],
+        button[title="Edit app in GitHub"],
+        button[title="Fork this app"] {{
+            display: none !important;
+            visibility: hidden !important;
         }}
 
-        /* Ocultar únicamente el footer y marcas de agua de Streamlit Cloud */
+        /* 3. Ocultar pie de página y marca de agua */
         footer {{visibility: hidden !important; display: none !important;}}
         .viewerBadge_container__1QSob {{display: none !important;}}
         [data-testid="stStatusWidget"] {{visibility: hidden !important; display: none !important;}}
 
-        /* 2. Fondo general de la barra lateral */
+        /* 4. Fondo general de la barra lateral */
         section[data-testid="stSidebar"] {{
             background-color: #10371E !important;
         }}
         
-        /* 3. Textos, títulos y etiquetas en blanco en sidebar */
+        /* 5. Textos, títulos y etiquetas en blanco en sidebar */
         section[data-testid="stSidebar"] h1,
         section[data-testid="stSidebar"] h2,
         section[data-testid="stSidebar"] h3,
@@ -95,7 +102,7 @@ st.markdown(f"""
             color: #FFFFFF !important;
         }}
 
-        /* 4. Cajas de selección: Fondo blanco con texto negro nítido */
+        /* 6. Cajas de selección: Fondo blanco con texto negro nítido */
         section[data-testid="stSidebar"] [data-baseweb="select"] {{
             background-color: #FFFFFF !important;
             border-radius: 8px !important;
@@ -118,7 +125,7 @@ st.markdown(f"""
             color: #1B4D2E !important;
         }}
 
-        /* 5. Menú desplegable emergente al hacer clic */
+        /* 7. Menú desplegable emergente al hacer clic */
         [data-baseweb="popover"], [data-baseweb="menu"], ul[role="listbox"] {{
             background-color: #FFFFFF !important;
         }}
@@ -132,7 +139,7 @@ st.markdown(f"""
             color: #1B4D2E !important;
         }}
 
-        /* 6. Botones corporativos */
+        /* 8. Botones corporativos */
         .stButton>button {{
             background-color: #1B4D2E;
             color: white !important;
@@ -167,7 +174,7 @@ if not st.session_state["autenticado"]:
     st.stop()
 
 # ==============================================================================
-# BARRA LATERAL CON LOGOS Y SELECTOR DE SEDES
+# BARRA LATERAL CON LOGOS, USUARIO Y SELECTOR DE TEMA
 # ==============================================================================
 usuario = st.session_state["usuario"]
 
@@ -202,6 +209,44 @@ if st.sidebar.button("Cerrar Sesión", use_container_width=True):
     st.session_state["autenticado"] = False
     st.session_state["usuario"] = None
     st.rerun()
+
+st.sidebar.markdown("---")
+
+# Selector de Tema Visual
+tema_elegido = st.sidebar.selectbox(
+    "🎨 Tema Visual:",
+    ["Sistema / Claro", "Oscuro", "Claro"],
+    index=0
+)
+
+if tema_elegido == "Oscuro":
+    st.markdown("""
+        <style>
+            .stApp {
+                background-color: #0E1117 !important;
+                color: #FAFAFA !important;
+            }
+            .stMarkdown, p, span, label, h1, h2, h3, h4 {
+                color: #FAFAFA !important;
+            }
+            [data-testid="stMetricValue"], [data-testid="stMetricLabel"] {
+                color: #FAFAFA !important;
+            }
+            .stTextInput>div>div>input, .stTextArea textarea {
+                background-color: #262730 !important;
+                color: #FFFFFF !important;
+            }
+        </style>
+    """, unsafe_allow_html=True)
+elif tema_elegido == "Claro":
+    st.markdown("""
+        <style>
+            .stApp {
+                background-color: #F8F9FA !important;
+                color: #111111 !important;
+            }
+        </style>
+    """, unsafe_allow_html=True)
 
 st.sidebar.markdown("---")
 st.sidebar.subheader("Selección de Sede")
