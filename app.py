@@ -7,12 +7,18 @@ import database as db
 import auth
 import pdf_generator as pdf_gen
 
-# Recarga de módulos para evitar uso de versiones previas en caché
+# Recarga limpia de módulos para evitar uso de versiones previas en caché
 importlib.reload(pdf_gen)
 
+# Detección y asignación del logo corporativo
+ruta_logo_local = os.path.join("assets", "logo_fosso.png")
+if not os.path.exists(ruta_logo_local):
+    ruta_logo_local = os.path.join("static", "favicon.png")
+
+# Configurar icono oficial en la pestaña del navegador
 st.set_page_config(
     page_title="FOSSO | Gestión Operativa",
-    page_icon="assets/logo_fosso.png" if os.path.exists("assets/logo_fosso.png") else "📋",
+    page_icon=ruta_logo_local if os.path.exists(ruta_logo_local) else "📋",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -20,39 +26,42 @@ st.set_page_config(
 # Inicializar Base de Datos
 db.init_db()
 
-# Función para codificar imagen a base64
+# Función para convertir imagen a base64
 def obtener_imagen_base64(ruta_imagen):
     if os.path.exists(ruta_imagen):
         with open(ruta_imagen, "rb") as f:
             return base64.b64encode(f.read()).decode()
     return ""
 
-# Detección del icono corporativo para la Web App
-ruta_ico = os.path.join("assets", "icono_app.png")
-if not os.path.exists(ruta_ico):
-    ruta_ico = os.path.join("assets", "logo_fosso.png")
-b64_ico = obtener_imagen_base64(ruta_ico)
+b64_ico = obtener_imagen_base64(ruta_logo_local)
 tag_ico = f"data:image/png;base64,{b64_ico}" if b64_ico else ""
 
-# Inyección de Metadatos PWA y Estilos Verdes Corporativos
+# Inyección de Metadatos PWA y eliminación de elementos visuales de Streamlit
 st.markdown(f"""
     <head>
+        <link rel="icon" type="image/png" href="{tag_ico}">
+        <link rel="apple-touch-icon" href="{tag_ico}">
         <meta name="mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="apple-mobile-web-app-title" content="FOSSO">
         <meta name="theme-color" content="#10371E">
-        <link rel="icon" type="image/png" href="{tag_ico}">
-        <link rel="apple-touch-icon" href="{tag_ico}">
-        <link rel="manifest" href="/app/static/manifest.json">
     </head>
     <style>
-        /* 1. Fondo general de la barra lateral */
+        /* 1. Ocultar menús, barra superior y marca de agua de Streamlit */
+        #MainMenu {{visibility: hidden !important; display: none !important;}}
+        footer {{visibility: hidden !important; display: none !important;}}
+        header {{visibility: hidden !important; display: none !important;}}
+        .viewerBadge_container__1QSob {{display: none !important;}}
+        [data-testid="stStatusWidget"] {{visibility: hidden !important; display: none !important;}}
+        [data-testid="stToolbar"] {{visibility: hidden !important; display: none !important;}}
+
+        /* 2. Fondo general de la barra lateral */
         section[data-testid="stSidebar"] {{
             background-color: #10371E !important;
         }}
         
-        /* 2. Textos, títulos y etiquetas en blanco */
+        /* 3. Textos, títulos y etiquetas en blanco en sidebar */
         section[data-testid="stSidebar"] h1,
         section[data-testid="stSidebar"] h2,
         section[data-testid="stSidebar"] h3,
@@ -63,7 +72,7 @@ st.markdown(f"""
             color: #FFFFFF !important;
         }}
 
-        /* 3. Cajas de selección: Fondo blanco con texto negro nítido */
+        /* 4. Cajas de selección: Fondo blanco con texto negro nítido */
         section[data-testid="stSidebar"] [data-baseweb="select"] {{
             background-color: #FFFFFF !important;
             border-radius: 8px !important;
@@ -86,7 +95,7 @@ st.markdown(f"""
             color: #1B4D2E !important;
         }}
 
-        /* 4. Menú desplegable emergente al hacer clic */
+        /* 5. Menú desplegable emergente al hacer clic */
         [data-baseweb="popover"], [data-baseweb="menu"], ul[role="listbox"] {{
             background-color: #FFFFFF !important;
         }}
@@ -100,7 +109,7 @@ st.markdown(f"""
             color: #1B4D2E !important;
         }}
 
-        /* 5. Botones */
+        /* 6. Botones corporativos */
         .stButton>button {{
             background-color: #1B4D2E;
             color: white !important;
