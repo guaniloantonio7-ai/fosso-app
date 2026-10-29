@@ -18,7 +18,7 @@ ruta_logo_local = os.path.join("assets", "icono_app.png")
 if not os.path.exists(ruta_logo_local):
     ruta_logo_local = os.path.join("assets", "logo_fosso.png")
 
-# Configurar icono oficial en la pestaña del navegador
+# Configurar página
 st.set_page_config(
     page_title="FOSSO | Gestión Operativa",
     page_icon=ruta_logo_local if os.path.exists(ruta_logo_local) else URL_ICONO_RAW,
@@ -39,7 +39,7 @@ def obtener_imagen_base64(ruta_imagen):
 b64_ico = obtener_imagen_base64(ruta_logo_local)
 tag_ico = f"data:image/png;base64,{b64_ico}" if b64_ico else URL_ICONO_RAW
 
-# Inyección de Metadatos PWA y Estilos visuales
+# Inyección de Metadatos PWA y corrección integral de la flecha del Sidebar
 st.markdown(f"""
     <head>
         <title>FOSSO</title>
@@ -54,68 +54,84 @@ st.markdown(f"""
         <link rel="shortcut icon" type="image/png" href="{URL_ICONO_RAW}">
     </head>
     <style>
-        /* 1. FLECHA DEL MENÚ LATERAL (ABRIR Y CERRAR) SIEMPRE VISIBLE Y EN PRIMER PLANO */
-        [data-testid="collapsedControl"] {{
-            display: block !important;
+        /* 1. FORZAR LA VISIBILIDAD DE LA FLECHA PARA ABRIR EL SIDEBAR */
+        [data-testid="stSidebarCollapsedControl"],
+        [data-testid="collapsedControl"],
+        div[data-testid="stSidebarCollapsedControl"],
+        div[data-testid="collapsedControl"] {{
+            display: flex !important;
             visibility: visible !important;
-            z-index: 999999 !important;
-            color: #10371E !important;
-            top: 15px !important;
-            left: 15px !important;
-        }}
-        [data-testid="collapsedControl"] button,
-        [data-testid="stSidebarCollapseButton"] button,
-        [data-testid="stSidebarCollapseButton"] {{
-            visibility: visible !important;
-            display: inline-flex !important;
-            color: #10371E !important;
-            background-color: rgba(255, 255, 255, 0.85) !important;
-            border-radius: 8px !important;
-            z-index: 999999 !important;
+            opacity: 1 !important;
+            position: fixed !important;
+            top: 14px !important;
+            left: 14px !important;
+            z-index: 9999999 !important;
         }}
 
-        /* 2. ELIMINAR "Hosted with Streamlit" Y EL BOTÓN "Manage app" EN PC Y MÓVIL */
-        .viewerBadge_container__1QSob,
-        div[class*="viewerBadge"],
-        a[class*="viewerBadge"],
+        /* Estilo visual del botón flotante de la flecha */
+        [data-testid="stSidebarCollapsedControl"] button,
+        [data-testid="collapsedControl"] button {{
+            display: flex !important;
+            visibility: visible !important;
+            background-color: #10371E !important;
+            color: #FFFFFF !important;
+            border: 2px solid #2E7D32 !important;
+            border-radius: 8px !important;
+            width: 42px !important;
+            height: 42px !important;
+            box-shadow: 0 3px 8px rgba(0,0,0,0.3) !important;
+            align-items: center !important;
+            justify-content: center !important;
+            cursor: pointer !important;
+        }}
+
+        [data-testid="stSidebarCollapsedControl"] svg,
+        [data-testid="collapsedControl"] svg {{
+            fill: #FFFFFF !important;
+            stroke: #FFFFFF !important;
+            color: #FFFFFF !important;
+            width: 24px !important;
+            height: 24px !important;
+        }}
+
+        /* Botón de repliegue cuando el menú está abierto */
+        [data-testid="stSidebarCollapseButton"] button {{
+            color: #FFFFFF !important;
+            background-color: transparent !important;
+        }}
+        [data-testid="stSidebarCollapseButton"] svg {{
+            fill: #FFFFFF !important;
+            stroke: #FFFFFF !important;
+        }}
+
+        /* 2. ELIMINAR BOTÓN 'Manage app' Y MARCA STREAMLIT */
+        [data-testid="manage-app-button"],
+        #manage-app-button,
         div[class*="manageApp"],
         button[class*="manageApp"],
         div[class*="ManageApp"],
-        #manage-app-button,
-        [data-testid="stStatusWidget"],
-        [data-testid="stConnectionStatus"],
+        .viewerBadge_container__1QSob,
+        div[class*="viewerBadge"],
         footer {{
             display: none !important;
             visibility: hidden !important;
-            height: 0px !important;
-            width: 0px !important;
             opacity: 0 !important;
             pointer-events: none !important;
         }}
 
-        /* 3. ELIMINAR HERRAMIENTAS DE DESARROLLO (GitHub, Share, Fork, Lápiz) */
+        /* 3. ELIMINAR HERRAMIENTAS DE GITHUB / SHARE */
         [data-testid="stToolbarActions"],
-        [data-testid="stToolbar"] > div:first-child,
         [data-testid="stAppDeployButton"],
-        .stToolbarActionButton,
-        button[title="View app in GitHub"],
-        button[title="Edit app in GitHub"],
-        button[title="Fork this app"] {{
+        .stToolbarActionButton {{
             display: none !important;
             visibility: hidden !important;
         }}
 
-        /* 4. Cabecera invisible para despejar la pantalla */
-        header[data-testid="stHeader"] {{
-            background-color: transparent !important;
-        }}
-
-        /* 5. Fondo general de la barra lateral */
+        /* 4. Barra lateral corporativa */
         section[data-testid="stSidebar"] {{
             background-color: #10371E !important;
         }}
         
-        /* 6. Textos, títulos y etiquetas en blanco en sidebar */
         section[data-testid="stSidebar"] h1,
         section[data-testid="stSidebar"] h2,
         section[data-testid="stSidebar"] h3,
@@ -126,7 +142,7 @@ st.markdown(f"""
             color: #FFFFFF !important;
         }}
 
-        /* 7. Cajas de selección: Fondo blanco con texto negro nítido */
+        /* Cajas de selección */
         section[data-testid="stSidebar"] [data-baseweb="select"] {{
             background-color: #FFFFFF !important;
             border-radius: 8px !important;
@@ -149,7 +165,7 @@ st.markdown(f"""
             color: #1B4D2E !important;
         }}
 
-        /* 8. Menú desplegable emergente al hacer clic */
+        /* Menú desplegable emergente */
         [data-baseweb="popover"], [data-baseweb="menu"], ul[role="listbox"] {{
             background-color: #FFFFFF !important;
         }}
@@ -163,7 +179,7 @@ st.markdown(f"""
             color: #1B4D2E !important;
         }}
 
-        /* 9. Botones corporativos */
+        /* Botones estándar */
         .stButton>button {{
             background-color: #1B4D2E;
             color: white !important;
