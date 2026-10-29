@@ -7,7 +7,7 @@ import database as db
 import auth
 import pdf_generator as pdf_gen
 
-# Recarga limpia de módulos para evitar uso de versiones previas en caché
+# Recarga limpia de módulos
 importlib.reload(pdf_gen)
 
 # Enlace directo del icono oficial en GitHub
@@ -54,22 +54,46 @@ st.markdown(f"""
         <link rel="shortcut icon" type="image/png" href="{URL_ICONO_RAW}">
     </head>
     <style>
-        /* 1. Header transparente que conserva la flecha del sidebar */
-        header[data-testid="stHeader"] {{
-            background-color: transparent !important;
-            z-index: 99 !important;
+        /* 1. FLECHA DEL MENÚ LATERAL (ABRIR Y CERRAR) SIEMPRE VISIBLE Y EN PRIMER PLANO */
+        [data-testid="collapsedControl"] {{
+            display: block !important;
+            visibility: visible !important;
+            z-index: 999999 !important;
+            color: #10371E !important;
+            top: 15px !important;
+            left: 15px !important;
         }}
-
-        /* Asegurar que la flecha para abrir/cerrar el menú siempre sea visible */
-        [data-testid="stSidebarCollapseButton"],
-        [data-testid="stSidebarNavCollapseIcon"],
-        button[kind="header"] {{
+        [data-testid="collapsedControl"] button,
+        [data-testid="stSidebarCollapseButton"] button,
+        [data-testid="stSidebarCollapseButton"] {{
             visibility: visible !important;
             display: inline-flex !important;
             color: #10371E !important;
+            background-color: rgba(255, 255, 255, 0.85) !important;
+            border-radius: 8px !important;
+            z-index: 999999 !important;
         }}
 
-        /* 2. Ocultar botones de desarrollo de GitHub, Fork, Lápiz y Share */
+        /* 2. ELIMINAR "Hosted with Streamlit" Y EL BOTÓN "Manage app" EN PC Y MÓVIL */
+        .viewerBadge_container__1QSob,
+        div[class*="viewerBadge"],
+        a[class*="viewerBadge"],
+        div[class*="manageApp"],
+        button[class*="manageApp"],
+        div[class*="ManageApp"],
+        #manage-app-button,
+        [data-testid="stStatusWidget"],
+        [data-testid="stConnectionStatus"],
+        footer {{
+            display: none !important;
+            visibility: hidden !important;
+            height: 0px !important;
+            width: 0px !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
+        }}
+
+        /* 3. ELIMINAR HERRAMIENTAS DE DESARROLLO (GitHub, Share, Fork, Lápiz) */
         [data-testid="stToolbarActions"],
         [data-testid="stToolbar"] > div:first-child,
         [data-testid="stAppDeployButton"],
@@ -81,17 +105,17 @@ st.markdown(f"""
             visibility: hidden !important;
         }}
 
-        /* 3. Ocultar pie de página y marca de agua */
-        footer {{visibility: hidden !important; display: none !important;}}
-        .viewerBadge_container__1QSob {{display: none !important;}}
-        [data-testid="stStatusWidget"] {{visibility: hidden !important; display: none !important;}}
+        /* 4. Cabecera invisible para despejar la pantalla */
+        header[data-testid="stHeader"] {{
+            background-color: transparent !important;
+        }}
 
-        /* 4. Fondo general de la barra lateral */
+        /* 5. Fondo general de la barra lateral */
         section[data-testid="stSidebar"] {{
             background-color: #10371E !important;
         }}
         
-        /* 5. Textos, títulos y etiquetas en blanco en sidebar */
+        /* 6. Textos, títulos y etiquetas en blanco en sidebar */
         section[data-testid="stSidebar"] h1,
         section[data-testid="stSidebar"] h2,
         section[data-testid="stSidebar"] h3,
@@ -102,7 +126,7 @@ st.markdown(f"""
             color: #FFFFFF !important;
         }}
 
-        /* 6. Cajas de selección: Fondo blanco con texto negro nítido */
+        /* 7. Cajas de selección: Fondo blanco con texto negro nítido */
         section[data-testid="stSidebar"] [data-baseweb="select"] {{
             background-color: #FFFFFF !important;
             border-radius: 8px !important;
@@ -125,7 +149,7 @@ st.markdown(f"""
             color: #1B4D2E !important;
         }}
 
-        /* 7. Menú desplegable emergente al hacer clic */
+        /* 8. Menú desplegable emergente al hacer clic */
         [data-baseweb="popover"], [data-baseweb="menu"], ul[role="listbox"] {{
             background-color: #FFFFFF !important;
         }}
@@ -139,7 +163,7 @@ st.markdown(f"""
             color: #1B4D2E !important;
         }}
 
-        /* 8. Botones corporativos */
+        /* 9. Botones corporativos */
         .stButton>button {{
             background-color: #1B4D2E;
             color: white !important;
