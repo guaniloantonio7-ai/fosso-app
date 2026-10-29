@@ -10,15 +10,18 @@ import pdf_generator as pdf_gen
 # Recarga limpia de módulos para evitar uso de versiones previas en caché
 importlib.reload(pdf_gen)
 
-# Detección y asignación del logo corporativo
-ruta_logo_local = os.path.join("assets", "logo_fosso.png")
+# Enlace directo crudo (Raw) del icono oficial en GitHub
+URL_ICONO_RAW = "https://raw.githubusercontent.com/guaniloantonio7-ai/fosso-app/main/assets/icono_app.png"
+
+# Detección de ruta local como respaldo
+ruta_logo_local = os.path.join("assets", "icono_app.png")
 if not os.path.exists(ruta_logo_local):
-    ruta_logo_local = os.path.join("static", "favicon.png")
+    ruta_logo_local = os.path.join("assets", "logo_fosso.png")
 
 # Configurar icono oficial en la pestaña del navegador
 st.set_page_config(
     page_title="FOSSO | Gestión Operativa",
-    page_icon=ruta_logo_local if os.path.exists(ruta_logo_local) else "📋",
+    page_icon=ruta_logo_local if os.path.exists(ruta_logo_local) else URL_ICONO_RAW,
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -26,7 +29,7 @@ st.set_page_config(
 # Inicializar Base de Datos
 db.init_db()
 
-# Función para convertir imagen a base64
+# Función para codificar imagen a base64
 def obtener_imagen_base64(ruta_imagen):
     if os.path.exists(ruta_imagen):
         with open(ruta_imagen, "rb") as f:
@@ -34,18 +37,21 @@ def obtener_imagen_base64(ruta_imagen):
     return ""
 
 b64_ico = obtener_imagen_base64(ruta_logo_local)
-tag_ico = f"data:image/png;base64,{b64_ico}" if b64_ico else ""
+tag_ico = f"data:image/png;base64,{b64_ico}" if b64_ico else URL_ICONO_RAW
 
-# Inyección de Metadatos PWA y eliminación de elementos visuales de Streamlit
+# Inyección de Metadatos PWA (iOS / Android / Desktop) y eliminación de Streamlit UI
 st.markdown(f"""
     <head>
-        <link rel="icon" type="image/png" href="{tag_ico}">
-        <link rel="apple-touch-icon" href="{tag_ico}">
-        <meta name="mobile-web-app-capable" content="yes">
+        <title>FOSSO</title>
         <meta name="apple-mobile-web-app-capable" content="yes">
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
         <meta name="apple-mobile-web-app-title" content="FOSSO">
+        <meta name="mobile-web-app-capable" content="yes">
         <meta name="theme-color" content="#10371E">
+        <link rel="apple-touch-icon" href="{URL_ICONO_RAW}">
+        <link rel="apple-touch-icon-precomposed" href="{URL_ICONO_RAW}">
+        <link rel="icon" type="image/png" href="{URL_ICONO_RAW}">
+        <link rel="shortcut icon" type="image/png" href="{URL_ICONO_RAW}">
     </head>
     <style>
         /* 1. Ocultar menús, barra superior y marca de agua de Streamlit */
@@ -149,6 +155,9 @@ if not st.session_state["autenticado"]:
 usuario = st.session_state["usuario"]
 
 logo_fosso = os.path.join("assets", "logo_fosso.png")
+if not os.path.exists(logo_fosso):
+    logo_fosso = os.path.join("assets", "icono_app.png")
+
 if os.path.exists(logo_fosso):
     b64_logo = obtener_imagen_base64(logo_fosso)
     st.sidebar.markdown(
@@ -166,6 +175,8 @@ if os.path.exists(logo_fosso):
         """,
         unsafe_allow_html=True
     )
+else:
+    st.sidebar.image(URL_ICONO_RAW, use_container_width=True)
 
 st.sidebar.markdown(f"**Usuario:** <span style='color: #FFFFFF;'>{usuario['nombre']}</span>", unsafe_allow_html=True)
 st.sidebar.markdown(f"**Cargo:** <span style='color: #A3E4D7; font-weight: bold;'>{usuario['cargo']}</span>", unsafe_allow_html=True)
